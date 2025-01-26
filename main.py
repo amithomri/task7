@@ -133,16 +133,22 @@ class MineSweeper:
 
 
 
+
     def _create_widgets(self):
-        for x in range(self.board.size_board):
-            row = []
-        for y in range(self.board.size_board):
-            btn = tk.Button(self.root, width=2, height=1, bg="light gray",
-                            command=lambda x1=x, y1=y: self._reveal_cell(x1, y1))
-        btn.bind("<Button-3>", lambda e, x2=x, y2=y: self._toggle_flag(x2, y2))
-        btn.grid(row=x, column=y)
-        row.append(btn)
-        self.buttons.append(row)
+        for row in range(self.size):
+            button_row = []
+            for col in range(self.size):
+                btn = tk.Button(
+                    self.root,
+                    width=2,
+                    height=1,
+                    bg="light gray",
+                    command=lambda row1=row, col1=col: self.handle_reveal(row1, col1)
+                )
+                btn.bind("<Button-3>", lambda e, row2=row, col2=col: self.handle_flag(row2, col2))
+                btn.grid(row=row, column=col)
+                button_row.append(btn)
+            self.buttons.append(button_row)
 
 
     def _reveal_recursive(self, x, y):
