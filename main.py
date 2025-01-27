@@ -10,7 +10,7 @@ def show_win_message(event):
 
 def show_lose_message(event):
     messagebox.showinfo("Result", "You Lose!")
-
+#class representing cell in board
 class Cell:
     def __init__(self, state, is_mine = False):
         self.state = state
@@ -18,14 +18,18 @@ class Cell:
         self.isbomb = is_mine
         self.neighbor_bombs = 0
 
+    # sets value of field is bomb to true
     def set_is_bomb(self):
         self.isbomb = True
+
+#class representing board for game
 class Board:
     def __init__(self, size_board, nubmer_mines):
         self.size_board = size_board
         self.nubmer_mines = nubmer_mines
         self.grid = self.generate_grid_matrix(size_board)
         self.mines_positions= self.add_mines_to_grid(nubmer_mines)
+        self.add_adjecent_mines_to_grid()
 
     # add mines to random places in grids
     def add_mines_to_grid(self,number_of_mines):
@@ -37,7 +41,6 @@ class Board:
             if(x_mine,y_mine) not in mines_positions_arr:
                 mines_positions_arr.append((x_mine,y_mine))
                 self.grid[x_mine][y_mine].set_is_bomb()
-                #self.grid[x_mine][y_mine].isbomb = True
                 index = index + 1
         return mines_positions_arr
 
@@ -69,6 +72,8 @@ class Board:
                 #cant have neighnors containg if it containes number not neccerssary of neighbors
                 if not self.grid[x][y].isbomb:
                     self.grid[x][y].neighbor_bombs = self.calculate_adjacent_mines(x, y)
+
+#class representing minesweeper game with board and gui
 class MineSweeper:
     def __init__(self, my_root, size, num_mines):
         self.root = my_root
@@ -129,10 +134,13 @@ class MineSweeper:
                 show_win_message(None)
                 self.root.quit()
 
+    #handle method to handle reveal cell in gui
+    def handle_reveal(self,row,col):
+        self._reveal_cell(row,col)
 
-
-
-
+    #handle flag method to handle flag toggle event of cell in gui
+    def handle_flag(self,row,col):
+        self._toggle_flag(row,col)
 
     def _create_widgets(self):
         for row in range(self.size):
@@ -152,11 +160,11 @@ class MineSweeper:
 
 
     def _reveal_recursive(self, x, y):
-        #cell = self.board.cells[x][y]
         cell = self.board.grid[x][y]
         if cell.is_revealed or cell.isbomb:
             return
-        cell.is_revealed = True
+        self.board.grid[x][y].is_revealed = True
+        self.board.grid[x][y].state = "revealed"
         self.buttons[x][y].config(bg="white", state=tk.DISABLED,
                                 text=str(cell.neighbor_bombs) if cell.neighbor_bombs > 0
                                 else "")
